@@ -35,8 +35,6 @@
 #include "core/templates/hash_map.h"
 #include "core/variant/typed_array.h"
 
-VARIANT_ENUM_CAST(IP::ResolverStatus);
-
 /************* RESOLVER ******************/
 
 struct _IP_ResolverPrivate {
@@ -119,7 +117,7 @@ struct _IP_ResolverPrivate {
 
 	HashMap<String, List<IPAddress>> cache;
 
-	static String get_cache_key(String p_hostname, IP::Type p_type) {
+	static String get_cache_key(const String &p_hostname, IP::Type p_type) {
 		return itos(p_type) + p_hostname;
 	}
 };
@@ -335,7 +333,7 @@ IP *(*IP::_create)() = nullptr;
 
 IP *IP::create() {
 	ERR_FAIL_COND_V_MSG(singleton, nullptr, "IP singleton already exist.");
-	ERR_FAIL_COND_V(!_create, nullptr);
+	ERR_FAIL_NULL_V(_create, nullptr);
 	return _create();
 }
 

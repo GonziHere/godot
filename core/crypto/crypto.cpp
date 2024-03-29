@@ -63,6 +63,8 @@ X509Certificate *X509Certificate::create() {
 void X509Certificate::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("save", "path"), &X509Certificate::save);
 	ClassDB::bind_method(D_METHOD("load", "path"), &X509Certificate::load);
+	ClassDB::bind_method(D_METHOD("save_to_string"), &X509Certificate::save_to_string);
+	ClassDB::bind_method(D_METHOD("load_from_string", "string"), &X509Certificate::load_from_string);
 }
 
 /// TLSOptions
@@ -122,7 +124,7 @@ HMACContext *HMACContext::create() {
 
 /// Crypto
 
-void (*Crypto::_load_default_certificates)(String p_path) = nullptr;
+void (*Crypto::_load_default_certificates)(const String &p_path) = nullptr;
 Crypto *(*Crypto::_create)() = nullptr;
 Crypto *Crypto::create() {
 	if (_create) {
@@ -131,13 +133,13 @@ Crypto *Crypto::create() {
 	ERR_FAIL_V_MSG(nullptr, "Crypto is not available when the mbedtls module is disabled.");
 }
 
-void Crypto::load_default_certificates(String p_path) {
+void Crypto::load_default_certificates(const String &p_path) {
 	if (_load_default_certificates) {
 		_load_default_certificates(p_path);
 	}
 }
 
-PackedByteArray Crypto::hmac_digest(HashingContext::HashType p_hash_type, PackedByteArray p_key, PackedByteArray p_msg) {
+PackedByteArray Crypto::hmac_digest(HashingContext::HashType p_hash_type, const PackedByteArray &p_key, const PackedByteArray &p_msg) {
 	Ref<HMACContext> ctx = Ref<HMACContext>(HMACContext::create());
 	ERR_FAIL_COND_V_MSG(ctx.is_null(), PackedByteArray(), "HMAC is not available without mbedtls module.");
 	Error err = ctx->start(p_hash_type, p_key);
@@ -149,7 +151,7 @@ PackedByteArray Crypto::hmac_digest(HashingContext::HashType p_hash_type, Packed
 
 // Compares two HMACS for equality without leaking timing information in order to prevent timing attacks.
 // @see: https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy
-bool Crypto::constant_time_compare(PackedByteArray p_trusted, PackedByteArray p_received) {
+bool Crypto::constant_time_compare(const PackedByteArray &p_trusted, const PackedByteArray &p_received) {
 	const uint8_t *t = p_trusted.ptr();
 	const uint8_t *r = p_received.ptr();
 	int tlen = p_trusted.size();

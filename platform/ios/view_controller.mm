@@ -29,13 +29,15 @@
 /**************************************************************************/
 
 #import "view_controller.h"
-#include "core/config/project_settings.h"
-#include "display_server_ios.h"
+
+#import "display_server_ios.h"
 #import "godot_view.h"
 #import "godot_view_renderer.h"
 #import "key_mapping_ios.h"
 #import "keyboard_input_view.h"
-#include "os_ios.h"
+#import "os_ios.h"
+
+#include "core/config/project_settings.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <GameController/GameController.h>
@@ -76,13 +78,15 @@
 				us = u32lbl[0];
 			}
 
+			KeyLocation location = KeyMappingIOS::key_location(press.key.keyCode);
+
 			if (!u32text.is_empty() && !u32text.begins_with("UIKey")) {
 				for (int i = 0; i < u32text.length(); i++) {
 					const char32_t c = u32text[i];
-					DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), c, fix_key_label(us, key), key, press.key.modifierFlags, true);
+					DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), c, fix_key_label(us, key), key, press.key.modifierFlags, true, location);
 				}
 			} else {
-				DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), 0, fix_key_label(us, key), key, press.key.modifierFlags, true);
+				DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), 0, fix_key_label(us, key), key, press.key.modifierFlags, true, location);
 			}
 		}
 	}
@@ -108,7 +112,9 @@
 				us = u32lbl[0];
 			}
 
-			DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), 0, fix_key_label(us, key), key, press.key.modifierFlags, false);
+			KeyLocation location = KeyMappingIOS::key_location(press.key.keyCode);
+
+			DisplayServerIOS::get_singleton()->key(fix_keycode(us, key), 0, fix_key_label(us, key), key, press.key.modifierFlags, false, location);
 		}
 	}
 }
@@ -159,9 +165,7 @@
 	[self observeKeyboard];
 	[self displayLoadingOverlay];
 
-	if (@available(iOS 11.0, *)) {
-		[self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
-	}
+	[self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
 }
 
 - (void)observeKeyboard {

@@ -7,14 +7,20 @@
 # We need dos2unix and isutf8.
 if [ ! -x "$(command -v dos2unix)" -o ! -x "$(command -v isutf8)" ]; then
     printf "Install 'dos2unix' and 'isutf8' (moreutils package) to use this script.\n"
+    exit 1
 fi
 
 set -uo pipefail
-IFS=$'\n\t'
 
-# Loops through all text files tracked by Git.
-git grep -zIl '' |
-while IFS= read -rd '' f; do
+if [ $# -eq 0 ]; then
+    # Loop through all code files tracked by Git.
+    mapfile -d '' files < <(git grep -zIl '')
+else
+    # $1 should be a file listing file paths to process. Used in CI.
+    mapfile -d ' ' < <(cat "$1")
+fi
+
+for f in "${files[@]}"; do
     # Exclude some types of files.
     if [[ "$f" == *"csproj" ]]; then
         continue
@@ -76,7 +82,7 @@ then
     # A diff has been created, notify the user, clean up, and exit.
     printf "\n\e[1;33m*** The following changes must be made to comply with the formatting rules:\e[0m\n\n"
     # Perl commands replace trailing spaces with `·` and tabs with `<TAB>`.
-    printf "$diff\n" | perl -pe 's/(.*[^ ])( +)(\e\[m)$/my $spaces="·" x length($2); sprintf("$1$spaces$3")/ge' | perl -pe 's/(.*[^\t])(\t+)(\e\[m)$/my $tabs="<TAB>" x length($2); sprintf("$1$tabs$3")/ge'
+    printf "%s\n" "$diff" | perl -pe 's/(.*[^ ])( +)(\e\[m)$/my $spaces="·" x length($2); sprintf("$1$spaces$3")/ge' | perl -pe 's/(.*[^\t])(\t+)(\e\[m)$/my $tabs="<TAB>" x length($2); sprintf("$1$tabs$3")/ge'
 fi
 
 printf "\n\e[1;91m*** Please fix your commit(s) with 'git commit --amend' or 'git rebase -i <hash>'\e[0m\n"

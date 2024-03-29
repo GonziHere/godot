@@ -12,6 +12,7 @@ mode_cubemap_quarter_res = #define USE_CUBEMAP_PASS \n#define USE_QUARTER_RES_PA
 
 USE_MULTIVIEW = false
 USE_INVERTED_Y = true
+APPLY_TONEMAPPING = true
 
 #[vertex]
 
@@ -103,6 +104,7 @@ uniform mat4 orientation;
 uniform vec4 projection;
 uniform vec3 position;
 uniform float time;
+uniform float sky_energy_multiplier;
 uniform float luminance_multiplier;
 
 uniform float fog_aerial_perspective;
@@ -167,24 +169,24 @@ void main() {
 
 #ifdef USE_CUBEMAP_PASS
 #ifdef USES_HALF_RES_COLOR
-	half_res_color = texture(samplerCube(half_res, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), cube_normal);
+	half_res_color = texture(samplerCube(half_res, SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP), cube_normal);
 #endif
 #ifdef USES_QUARTER_RES_COLOR
-	quarter_res_color = texture(samplerCube(quarter_res, material_samplers[SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP]), cube_normal);
+	quarter_res_color = texture(samplerCube(quarter_res, SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP), cube_normal);
 #endif
 #else
 #ifdef USES_HALF_RES_COLOR
 #ifdef USE_MULTIVIEW
-	half_res_color = textureLod(sampler2DArray(half_res, material_samplers[SAMPLER_LINEAR_CLAMP]), vec3(uv, ViewIndex), 0.0);
+	half_res_color = textureLod(sampler2DArray(half_res, SAMPLER_LINEAR_CLAMP), vec3(uv, ViewIndex), 0.0);
 #else
-	half_res_color = textureLod(sampler2D(half_res, material_samplers[SAMPLER_LINEAR_CLAMP]), uv, 0.0);
+	half_res_color = textureLod(sampler2D(half_res, SAMPLER_LINEAR_CLAMP), uv, 0.0);
 #endif
 #endif
 #ifdef USES_QUARTER_RES_COLOR
 #ifdef USE_MULTIVIEW
-	quarter_res_color = textureLod(sampler2DArray(quarter_res, material_samplers[SAMPLER_LINEAR_CLAMP]), vec3(uv, ViewIndex), 0.0);
+	quarter_res_color = textureLod(sampler2DArray(quarter_res, SAMPLER_LINEAR_CLAMP), vec3(uv, ViewIndex), 0.0);
 #else
-	quarter_res_color = textureLod(sampler2D(quarter_res, material_samplers[SAMPLER_LINEAR_CLAMP]), uv, 0.0);
+	quarter_res_color = textureLod(sampler2D(quarter_res, SAMPLER_LINEAR_CLAMP), uv, 0.0);
 #endif
 #endif
 #endif
@@ -195,12 +197,14 @@ void main() {
 
 	}
 
-	color *= luminance_multiplier;
+	color *= sky_energy_multiplier;
 
 	// Convert to Linear for tonemapping so color matches scene shader better
 	color = srgb_to_linear(color);
 	color *= exposure;
+#ifdef APPLY_TONEMAPPING
 	color = apply_tonemapping(color, white);
+#endif
 	color = linear_to_srgb(color);
 
 #ifdef USE_BCS
@@ -211,10 +215,10 @@ void main() {
 	color = apply_color_correction(color, color_correction);
 #endif
 
-	frag_color.rgb = color;
+	frag_color.rgb = color * luminance_multiplier;
 	frag_color.a = alpha;
 
 #ifdef USE_DEBANDING
-	frag_color.rgb += interleaved_gradient_noise(gl_FragCoord.xy);
+	frag_color.rgb += interleaved_gradient_noise(gl_FragCoord.xy) * sky_energy_multiplier * luminance_multiplier;
 #endif
 }
