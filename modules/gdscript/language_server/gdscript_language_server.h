@@ -28,13 +28,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GDSCRIPT_LANGUAGE_SERVER_H
-#define GDSCRIPT_LANGUAGE_SERVER_H
+#pragma once
 
-#include "../gdscript_parser.h"
 #include "gdscript_language_protocol.h"
 
-#include "editor/editor_plugin.h"
+#include "editor/plugins/editor_plugin.h"
 
 class GDScriptLanguageServer : public EditorPlugin {
 	GDCLASS(GDScriptLanguageServer, EditorPlugin);
@@ -61,5 +59,3 @@ public:
 };
 
 void register_lsp_types();
-
-#endif // GDSCRIPT_LANGUAGE_SERVER_H

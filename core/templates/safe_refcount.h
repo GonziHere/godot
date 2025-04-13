@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef SAFE_REFCOUNT_H
-#define SAFE_REFCOUNT_H
+#pragma once
 
 #include "core/typedefs.h"
 
@@ -38,7 +37,7 @@
 #endif
 
 #include <atomic>
-#include <type_traits>
+#include <type_traits> // IWYU pragma: keep // Used in macro.
 
 // Design goals for these classes:
 // - No automatic conversions or arithmetic operators,
@@ -146,7 +145,7 @@ public:
 		}
 	}
 
-	_ALWAYS_INLINE_ explicit SafeNumeric<T>(T p_value = static_cast<T>(0)) {
+	_ALWAYS_INLINE_ explicit SafeNumeric(T p_value = static_cast<T>(0)) {
 		set(p_value);
 	}
 };
@@ -222,5 +221,3 @@ public:
 		count.set(p_value);
 	}
 };
-
-#endif // SAFE_REFCOUNT_H

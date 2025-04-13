@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef CONNECTIONS_DIALOG_H
-#define CONNECTIONS_DIALOG_H
+#pragma once
 
 #include "scene/gui/check_button.h"
 #include "scene/gui/dialogs.h"
@@ -191,7 +190,7 @@ public:
 
 //////////////////////////////////////////
 
-// Custom `Tree` needed to use `EditorHelpTooltip` to display signal documentation.
+// Custom `Tree` needed to use `EditorHelpBit` to display signal documentation.
 class ConnectionsDockTree : public Tree {
 	virtual Control *make_custom_tooltip(const String &p_text) const;
 };
@@ -269,7 +268,4 @@ public:
 	void update_tree();
 
 	ConnectionsDock();
-	~ConnectionsDock();
 };
-
-#endif // CONNECTIONS_DIALOG_H

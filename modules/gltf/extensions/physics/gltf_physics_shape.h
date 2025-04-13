@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GLTF_PHYSICS_SHAPE_H
-#define GLTF_PHYSICS_SHAPE_H
+#pragma once
 
 #include "../../gltf_defines.h"
 
@@ -55,7 +54,7 @@ private:
 	bool is_trigger = false;
 	GLTFMeshIndex mesh_index = -1;
 	Ref<ImporterMesh> importer_mesh = nullptr;
-	// Internal only, for caching Godot shape resources. Used in `to_node`.
+	// Internal only, for caching Godot shape resources. Used in `to_resource` and `to_node`.
 	Ref<Shape3D> _shape_cache = nullptr;
 
 public:
@@ -83,8 +82,9 @@ public:
 	static Ref<GLTFPhysicsShape> from_node(const CollisionShape3D *p_shape_node);
 	CollisionShape3D *to_node(bool p_cache_shapes = false);
 
+	static Ref<GLTFPhysicsShape> from_resource(const Ref<Shape3D> &p_shape_resource);
+	Ref<Shape3D> to_resource(bool p_cache_shapes = false);
+
 	static Ref<GLTFPhysicsShape> from_dictionary(const Dictionary p_dictionary);
 	Dictionary to_dictionary() const;
 };
-
-#endif // GLTF_PHYSICS_SHAPE_H

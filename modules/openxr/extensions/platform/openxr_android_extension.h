@@ -28,11 +28,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef OPENXR_ANDROID_EXTENSION_H
-#define OPENXR_ANDROID_EXTENSION_H
+#pragma once
 
 #include "../../util.h"
 #include "../openxr_extension_wrapper.h"
+
+#include <jni.h>
 
 class OpenXRAndroidExtension : public OpenXRExtensionWrapper {
 public:
@@ -49,11 +50,11 @@ public:
 private:
 	static OpenXRAndroidExtension *singleton;
 
+	JavaVM *vm;
+	jobject activity_object;
 	bool loader_init_extension_available = false;
 	bool create_instance_extension_available = false;
 
 	// Initialize the loader
 	EXT_PROTO_XRRESULT_FUNC1(xrInitializeLoaderKHR, (const XrLoaderInitInfoBaseHeaderKHR *), loaderInitInfo)
 };
-
-#endif // OPENXR_ANDROID_EXTENSION_H

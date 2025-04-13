@@ -30,8 +30,7 @@
 
 #include "sprite_2d.h"
 
-#include "scene/main/window.h"
-#include "scene/scene_string_names.h"
+#include "scene/main/viewport.h"
 
 #ifdef TOOLS_ENABLED
 Dictionary Sprite2D::_edit_get_state() const {
@@ -57,7 +56,9 @@ Point2 Sprite2D::_edit_get_pivot() const {
 bool Sprite2D::_edit_use_pivot() const {
 	return true;
 }
+#endif // TOOLS_ENABLED
 
+#ifdef DEBUG_ENABLED
 bool Sprite2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
 	return is_pixel_opaque(p_point);
 }
@@ -69,7 +70,7 @@ Rect2 Sprite2D::_edit_get_rect() const {
 bool Sprite2D::_edit_use_rect() const {
 	return texture.is_valid();
 }
-#endif
+#endif // DEBUG_ENABLED
 
 Rect2 Sprite2D::get_anchorable_rect() const {
 	return get_rect();
@@ -99,7 +100,7 @@ void Sprite2D::_get_rects(Rect2 &r_src_rect, Rect2 &r_dst_rect, bool &r_filter_c
 	}
 
 	if (get_viewport() && get_viewport()->is_snap_2d_transforms_to_pixel_enabled()) {
-		dest_offset = dest_offset.round();
+		dest_offset = (dest_offset + Point2(0.5, 0.5)).floor();
 	}
 
 	r_dst_rect = Rect2(dest_offset, frame_size);
@@ -114,6 +115,17 @@ void Sprite2D::_get_rects(Rect2 &r_src_rect, Rect2 &r_dst_rect, bool &r_filter_c
 
 void Sprite2D::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_ACCESSIBILITY_UPDATE: {
+			RID ae = get_accessibility_element();
+			ERR_FAIL_COND(ae.is_null());
+
+			Rect2 dst_rect = get_rect();
+
+			DisplayServer::get_singleton()->accessibility_update_set_role(ae, DisplayServer::AccessibilityRole::ROLE_IMAGE);
+			DisplayServer::get_singleton()->accessibility_update_set_transform(ae, get_transform());
+			DisplayServer::get_singleton()->accessibility_update_set_bounds(ae, dst_rect);
+		} break;
+
 		case NOTIFICATION_DRAW: {
 			if (texture.is_null()) {
 				return;
@@ -146,7 +158,7 @@ void Sprite2D::set_texture(const Ref<Texture2D> &p_texture) {
 	}
 
 	queue_redraw();
-	emit_signal(SceneStringNames::get_singleton()->texture_changed);
+	emit_signal(SceneStringName(texture_changed));
 	item_rect_changed();
 }
 
@@ -260,7 +272,7 @@ void Sprite2D::set_frame(int p_frame) {
 
 	frame = p_frame;
 	item_rect_changed();
-	emit_signal(SceneStringNames::get_singleton()->frame_changed);
+	emit_signal(SceneStringName(frame_changed));
 }
 
 int Sprite2D::get_frame() const {
@@ -401,7 +413,7 @@ Rect2 Sprite2D::get_rect() const {
 	}
 
 	if (get_viewport() && get_viewport()->is_snap_2d_transforms_to_pixel_enabled()) {
-		ofs = ofs.round();
+		ofs = (ofs + Point2(0.5, 0.5)).floor();
 	}
 
 	if (s == Size2(0, 0)) {
@@ -422,7 +434,7 @@ void Sprite2D::_validate_property(PropertyInfo &p_property) const {
 		p_property.usage |= PROPERTY_USAGE_KEYING_INCREMENTS;
 	}
 
-	if (!region_enabled && (p_property.name == "region_rect" || p_property.name == "region_filter_clip")) {
+	if (!region_enabled && (p_property.name == "region_rect" || p_property.name == "region_filter_clip_enabled")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }

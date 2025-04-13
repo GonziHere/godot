@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GDSCRIPT_TEST_RUNNER_SUITE_H
-#define GDSCRIPT_TEST_RUNNER_SUITE_H
+#pragma once
 
 #include "gdscript_test_runner.h"
 
@@ -81,11 +80,9 @@ TEST_CASE("[Modules][GDScript] Validate built-in API") {
 
 	SUBCASE("[Modules][GDScript] Validate built-in methods") {
 		for (const MethodInfo &mi : builtin_methods) {
-			for (int j = 0; j < mi.arguments.size(); j++) {
-				PropertyInfo arg = mi.arguments[j];
-
-				TEST_COND((arg.name.is_empty() || arg.name.begins_with("_unnamed_arg")),
-						vformat("Unnamed argument in position %d of built-in method '%s'.", j, mi.name));
+			for (int64_t i = 0; i < mi.arguments.size(); ++i) {
+				TEST_COND((mi.arguments[i].name.is_empty() || mi.arguments[i].name.begins_with("_unnamed_arg")),
+						vformat("Unnamed argument in position %d of built-in method '%s'.", i, mi.name));
 			}
 		}
 	}
@@ -96,16 +93,12 @@ TEST_CASE("[Modules][GDScript] Validate built-in API") {
 
 	SUBCASE("[Modules][GDScript] Validate built-in annotations") {
 		for (const MethodInfo &ai : builtin_annotations) {
-			for (int j = 0; j < ai.arguments.size(); j++) {
-				PropertyInfo arg = ai.arguments[j];
-
-				TEST_COND((arg.name.is_empty() || arg.name.begins_with("_unnamed_arg")),
-						vformat("Unnamed argument in position %d of built-in annotation '%s'.", j, ai.name));
+			for (int64_t i = 0; i < ai.arguments.size(); ++i) {
+				TEST_COND((ai.arguments[i].name.is_empty() || ai.arguments[i].name.begins_with("_unnamed_arg")),
+						vformat("Unnamed argument in position %d of built-in annotation '%s'.", i, ai.name));
 			}
 		}
 	}
 }
 
 } // namespace GDScriptTests
-
-#endif // GDSCRIPT_TEST_RUNNER_SUITE_H

@@ -31,10 +31,6 @@
 #include "skeleton_modification_2d_lookat.h"
 #include "scene/2d/skeleton_2d.h"
 
-#ifdef TOOLS_ENABLED
-#include "editor/editor_settings.h"
-#endif // TOOLS_ENABLED
-
 bool SkeletonModification2DLookAt::_set(const StringName &p_path, const Variant &p_value) {
 	String path = p_path;
 
@@ -128,7 +124,7 @@ void SkeletonModification2DLookAt::_execute(float p_delta) {
 	}
 
 	if (target_node_reference == nullptr) {
-		target_node_reference = Object::cast_to<Node2D>(ObjectDB::get_instance(target_node_cache));
+		target_node_reference = ObjectDB::get_instance<Node2D>(target_node_cache);
 	}
 	if (!target_node_reference || !target_node_reference->is_inside_tree()) {
 		ERR_PRINT_ONCE("Target node is not in the scene tree. Cannot execute modification!");
@@ -200,7 +196,9 @@ void SkeletonModification2DLookAt::_draw_editor_gizmo() {
 
 void SkeletonModification2DLookAt::update_bone2d_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update Bone2D cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update Bone2D cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -256,7 +254,6 @@ void SkeletonModification2DLookAt::set_bone_index(int p_bone_idx) {
 			bone_idx = p_bone_idx;
 		}
 	} else {
-		WARN_PRINT("Cannot verify the bone index for this modification...");
 		bone_idx = p_bone_idx;
 	}
 
@@ -265,7 +262,9 @@ void SkeletonModification2DLookAt::set_bone_index(int p_bone_idx) {
 
 void SkeletonModification2DLookAt::update_target_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -400,7 +399,7 @@ SkeletonModification2DLookAt::SkeletonModification2DLookAt() {
 	additional_rotation = 0;
 	enable_constraint = false;
 	constraint_angle_min = 0;
-	constraint_angle_max = Math_PI * 2;
+	constraint_angle_max = Math::PI * 2;
 	constraint_angle_invert = false;
 	enabled = true;
 

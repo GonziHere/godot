@@ -124,7 +124,7 @@ void SkeletonModification2DTwoBoneIK::_execute(float p_delta) {
 		update_joint_two_bone2d_cache();
 	}
 
-	Node2D *target = Object::cast_to<Node2D>(ObjectDB::get_instance(target_node_cache));
+	Node2D *target = ObjectDB::get_instance<Node2D>(target_node_cache);
 	if (!target || !target->is_inside_tree()) {
 		ERR_PRINT_ONCE("Target node is not in the scene tree. Cannot execute modification!");
 		return;
@@ -178,7 +178,7 @@ void SkeletonModification2DTwoBoneIK::_execute(float p_delta) {
 			// We cannot solve for this angle! Do nothing to avoid setting the rotation (and scale) to NaN.
 		} else {
 			joint_one_bone->set_global_rotation(angle_atan - angle_0 - joint_one_bone->get_bone_angle());
-			joint_two_bone->set_rotation(-Math_PI - angle_1 - joint_two_bone->get_bone_angle() + joint_one_bone->get_bone_angle());
+			joint_two_bone->set_rotation(-Math::PI - angle_1 - joint_two_bone->get_bone_angle() + joint_one_bone->get_bone_angle());
 		}
 	} else {
 		joint_one_bone->set_global_rotation(angle_atan - joint_one_bone->get_bone_angle());
@@ -221,10 +221,10 @@ void SkeletonModification2DTwoBoneIK::_draw_editor_gizmo() {
 #endif // TOOLS_ENABLED
 
 	if (flip_bend_direction) {
-		float angle = -(Math_PI * 0.5) + operation_bone_one->get_bone_angle();
+		float angle = -(Math::PI * 0.5) + operation_bone_one->get_bone_angle();
 		stack->skeleton->draw_line(Vector2(0, 0), Vector2(Math::cos(angle), sin(angle)) * (operation_bone_one->get_length() * 0.5), bone_ik_color, 2.0);
 	} else {
-		float angle = (Math_PI * 0.5) + operation_bone_one->get_bone_angle();
+		float angle = (Math::PI * 0.5) + operation_bone_one->get_bone_angle();
 		stack->skeleton->draw_line(Vector2(0, 0), Vector2(Math::cos(angle), sin(angle)) * (operation_bone_one->get_length() * 0.5), bone_ik_color, 2.0);
 	}
 
@@ -235,7 +235,7 @@ void SkeletonModification2DTwoBoneIK::_draw_editor_gizmo() {
 				Vector2 target_direction = Vector2(0, 1);
 				if (target_node_cache.is_valid()) {
 					stack->skeleton->draw_set_transform(Vector2(0, 0), 0.0);
-					Node2D *target = Object::cast_to<Node2D>(ObjectDB::get_instance(target_node_cache));
+					Node2D *target = ObjectDB::get_instance<Node2D>(target_node_cache);
 					target_direction = operation_bone_one->get_global_position().direction_to(target->get_global_position());
 				}
 
@@ -250,7 +250,9 @@ void SkeletonModification2DTwoBoneIK::_draw_editor_gizmo() {
 
 void SkeletonModification2DTwoBoneIK::update_target_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -271,7 +273,9 @@ void SkeletonModification2DTwoBoneIK::update_target_cache() {
 
 void SkeletonModification2DTwoBoneIK::update_joint_one_bone2d_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update joint one Bone2D cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update joint one Bone2D cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -299,7 +303,9 @@ void SkeletonModification2DTwoBoneIK::update_joint_one_bone2d_cache() {
 
 void SkeletonModification2DTwoBoneIK::update_joint_two_bone2d_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update joint two Bone2D cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update joint two Bone2D cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -400,7 +406,6 @@ void SkeletonModification2DTwoBoneIK::set_joint_one_bone_idx(int p_bone_idx) {
 			joint_one_bone_idx = p_bone_idx;
 		}
 	} else {
-		WARN_PRINT("TwoBoneIK: Cannot verify the joint bone index for joint one...");
 		joint_one_bone_idx = p_bone_idx;
 	}
 
@@ -425,7 +430,6 @@ void SkeletonModification2DTwoBoneIK::set_joint_two_bone_idx(int p_bone_idx) {
 			joint_two_bone_idx = p_bone_idx;
 		}
 	} else {
-		WARN_PRINT("TwoBoneIK: Cannot verify the joint bone index for joint two...");
 		joint_two_bone_idx = p_bone_idx;
 	}
 

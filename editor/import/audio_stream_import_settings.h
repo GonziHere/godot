@@ -28,10 +28,9 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef AUDIO_STREAM_IMPORT_SETTINGS_H
-#define AUDIO_STREAM_IMPORT_SETTINGS_H
+#pragma once
 
-#include "editor/editor_plugin.h"
+#include "editor/plugins/editor_plugin.h"
 #include "scene/audio/audio_stream_player.h"
 #include "scene/gui/color_rect.h"
 #include "scene/gui/dialogs.h"
@@ -113,5 +112,3 @@ public:
 
 	AudioStreamImportSettingsDialog();
 };
-
-#endif // AUDIO_STREAM_IMPORT_SETTINGS_H

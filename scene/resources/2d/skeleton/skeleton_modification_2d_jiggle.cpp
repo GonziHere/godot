@@ -143,7 +143,7 @@ void SkeletonModification2DJiggle::_execute(float p_delta) {
 		update_target_cache();
 		return;
 	}
-	Node2D *target = Object::cast_to<Node2D>(ObjectDB::get_instance(target_node_cache));
+	Node2D *target = ObjectDB::get_instance<Node2D>(target_node_cache);
 	if (!target || !target->is_inside_tree()) {
 		ERR_PRINT_ONCE("Target node is not in the scene tree. Cannot execute modification!");
 		return;
@@ -254,6 +254,8 @@ void SkeletonModification2DJiggle::_setup_modification(SkeletonModificationStack
 					Bone2D *bone2d_node = stack->skeleton->get_bone(bone_idx);
 					jiggle_data_chain.write[i].dynamic_position = bone2d_node->get_global_position();
 				}
+
+				jiggle_joint_update_bone2d_cache(i);
 			}
 		}
 
@@ -263,7 +265,9 @@ void SkeletonModification2DJiggle::_setup_modification(SkeletonModificationStack
 
 void SkeletonModification2DJiggle::update_target_cache() {
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -285,7 +289,9 @@ void SkeletonModification2DJiggle::update_target_cache() {
 void SkeletonModification2DJiggle::jiggle_joint_update_bone2d_cache(int p_joint_idx) {
 	ERR_FAIL_INDEX_MSG(p_joint_idx, jiggle_data_chain.size(), "Cannot update bone2d cache: joint index out of range!");
 	if (!is_setup || !stack) {
-		ERR_PRINT_ONCE("Cannot update Jiggle " + itos(p_joint_idx) + " Bone2D cache: modification is not properly setup!");
+		if (is_setup) {
+			ERR_PRINT_ONCE("Cannot update Jiggle " + itos(p_joint_idx) + " Bone2D cache: modification is not properly setup!");
+		}
 		return;
 	}
 
@@ -425,7 +431,6 @@ void SkeletonModification2DJiggle::set_jiggle_joint_bone_index(int p_joint_idx, 
 			jiggle_data_chain.write[p_joint_idx].bone_idx = p_bone_idx;
 		}
 	} else {
-		WARN_PRINT("Cannot verify the Jiggle joint " + itos(p_joint_idx) + " bone index for this modification...");
 		jiggle_data_chain.write[p_joint_idx].bone_idx = p_bone_idx;
 	}
 

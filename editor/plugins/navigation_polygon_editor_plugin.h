@@ -28,12 +28,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef NAVIGATION_POLYGON_EDITOR_PLUGIN_H
-#define NAVIGATION_POLYGON_EDITOR_PLUGIN_H
+#pragma once
 
 #include "editor/plugins/abstract_polygon_2d_editor.h"
 
-#include "editor/editor_plugin.h"
+#include "editor/plugins/editor_plugin.h"
 
 class AcceptDialog;
 class HBoxContainer;
@@ -94,5 +93,3 @@ class NavigationPolygonEditorPlugin : public AbstractPolygon2DEditorPlugin {
 public:
 	NavigationPolygonEditorPlugin();
 };
-
-#endif // NAVIGATION_POLYGON_EDITOR_PLUGIN_H

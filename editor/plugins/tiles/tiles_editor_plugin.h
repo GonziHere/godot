@@ -28,13 +28,10 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef TILES_EDITOR_PLUGIN_H
-#define TILES_EDITOR_PLUGIN_H
+#pragma once
 
-#include "editor/editor_plugin.h"
-#include "scene/gui/box_container.h"
+#include "editor/plugins/editor_plugin.h"
 
-#include "tile_atlas_view.h"
 #include "tile_map_layer_editor.h"
 #include "tile_set_editor.h"
 
@@ -126,8 +123,8 @@ class TileMapEditorPlugin : public EditorPlugin {
 	void _update_tile_map();
 	void _select_layer(const StringName &p_name);
 
-	void _edit_tile_map_layer(TileMapLayer *p_tile_map_layer);
-	void _edit_tile_map_layer_group(TileMapLayerGroup *p_tile_map_layer_group);
+	void _edit_tile_map_layer(TileMapLayer *p_tile_map_layer, bool p_show_layer_selector);
+	void _edit_tile_map(TileMap *p_tile_map);
 
 protected:
 	void _notification(int p_notification);
@@ -165,5 +162,3 @@ public:
 	TileSetEditorPlugin();
 	~TileSetEditorPlugin();
 };
-
-#endif // TILES_EDITOR_PLUGIN_H

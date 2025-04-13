@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef RING_BUFFER_H
-#define RING_BUFFER_H
+#pragma once
 
 #include "core/templates/vector.h"
 
@@ -211,10 +210,8 @@ public:
 		size_mask = mask;
 	}
 
-	RingBuffer<T>(int p_power = 0) {
+	RingBuffer(int p_power = 0) {
 		resize(p_power);
 	}
-	~RingBuffer<T>() {}
+	~RingBuffer() {}
 };
-
-#endif // RING_BUFFER_H
