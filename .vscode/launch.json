@@ -1,0 +1,24 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Editor",
+			"type": "cppvsdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/bin/godot.windows.editor.x86_64.exe",
+			// Change the arguments below for the project you want to test with.
+			// To run the project instead of editing it, remove the "--editor" argument.
+			"args": [
+				"--editor",
+				"--path",
+				"C:/GameProjects/GodotViewDistance"
+			],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"console": "internalConsole",
+			"visualizerFile": "${workspaceFolder}/platform/windows/godot.natvis",
+			// "preLaunchTask": "build"
+		}
+	]
+}
